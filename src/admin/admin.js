@@ -4,7 +4,7 @@ import AdminJSSequelize from '@adminjs/sequelize';
 import express from 'express';
 import session from 'express-session';
 import dotenv from 'dotenv';
-import { User, Product, Category, Order, OrderItem, Setting } from './models/index.js';
+import { User, Product, Category, Order, OrderItem, Setting } from '../models/index.js';
 
 dotenv.config();
 

@@ -11,7 +11,6 @@ const Product = sequelize.define(
 
     price: { type: DataTypes.DECIMAL(10, 2), allowNull: false },
 
-    // correct foreign key (Sequelize only)
     categoryId: { type: DataTypes.INTEGER, allowNull: true },
   },
   { tableName: "products" }

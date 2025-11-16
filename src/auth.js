@@ -17,7 +17,7 @@ export function verifyJwt(token) {
   }
 }
 
-// middleware to read cookie and set req.session.admin and req.session.adminUser
+
 export function adminJwtMiddleware(req, res, next) {
   const token =
     req.cookies?.[ADMIN_COOKIE_NAME] ||

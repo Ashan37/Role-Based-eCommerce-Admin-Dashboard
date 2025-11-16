@@ -25,14 +25,12 @@ app.use(
 // API routes
 app.use("/api", authRoutes);
 
-// Dev-friendly admin login page: GET /admin/login
 app.use(adminLoginRouter);
 
-// Admin 
-// Compatibility middleware: rewrite older/capitalized resource ids to actual ids
+// Admin
+
 app.use((req, res, next) => {
   try {
-    // Map of possible incoming resource ids -> actual registered AdminJS ids
     const map = {
       Category: "categories",
       Product: "products",
@@ -46,12 +44,13 @@ app.use((req, res, next) => {
     if (match) {
       const incoming = match[1];
       if (map[incoming]) {
-        req.url = req.url.replace(`/admin/api/resources/${incoming}/`, `/admin/api/resources/${map[incoming]}/`);
+        req.url = req.url.replace(
+          `/admin/api/resources/${incoming}/`,
+          `/admin/api/resources/${map[incoming]}/`
+        );
       }
     }
-  } catch (e) {
-    // ignore and continue
-  }
+  } catch (e) {}
   next();
 });
 
@@ -66,7 +65,7 @@ const PORT = process.env.PORT || 3000;
   try {
     await sequelize.authenticate();
     console.log("DB connected");
-    await sequelize.sync({ alter: true }); // dev only
+    await sequelize.sync({ alter: true }); 
     // seed admin if none found
     const { User } = await import("./models/index.js");
     const admin = await User.findOne({ where: { role: "admin" } });

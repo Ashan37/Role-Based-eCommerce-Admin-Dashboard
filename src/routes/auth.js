@@ -19,7 +19,7 @@ router.post("/login", async (req, res) => {
 
   const token = signJwt({ id: user.id, email: user.email, role: user.role });
 
-  // set cookie (so browser-based AdminJS can pick it up)
+  // set cookie 
   res.cookie(process.env.ADMIN_COOKIE_NAME || "adminToken", token, {
     httpOnly: true,
     secure: process.env.NODE_ENV === "production",

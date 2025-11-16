@@ -5,9 +5,13 @@ const Product = sequelize.define(
   "Product",
   {
     id: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
+
     title: { type: DataTypes.STRING, allowNull: false },
     description: { type: DataTypes.TEXT },
+
     price: { type: DataTypes.DECIMAL(10, 2), allowNull: false },
+
+    // correct foreign key (Sequelize only)
     categoryId: { type: DataTypes.INTEGER, allowNull: true },
   },
   { tableName: "products" }

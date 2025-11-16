@@ -1,4 +1,3 @@
-// src/admin/components/Dashboard.jsx
 import React from 'react';
 import { H2, Text } from '@adminjs/design-system';
 

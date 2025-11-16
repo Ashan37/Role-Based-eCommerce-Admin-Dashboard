@@ -1,13 +1,15 @@
+// src/admin/index.js
 import AdminJS from "adminjs";
 import AdminJSExpress from "@adminjs/express";
 import AdminJSSequelize from "@adminjs/sequelize";
 import { ComponentLoader } from "adminjs";
-import path from "path";
-import { fileURLToPath } from "url";
+
 import express from "express";
 import bcrypt from "bcrypt";
-import sequelize from "../config/db.js";
+import path from "path";
+import { fileURLToPath } from "url";
 
+import sequelize from "../config/db.js";
 import {
   User,
   Category,
@@ -19,27 +21,40 @@ import {
 
 import { adminJwtMiddleware } from "../auth.js";
 
-// Component loader initialization
-const componentLoader = new ComponentLoader();
+// ==========================================================================
+// WINDOWS FIX: Resolve __dirname for ES modules
+// ==========================================================================
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-// Register your custom dashboard component here
+// ==========================================================================
+// Component Loader (AdminJS v7)
+// ==========================================================================
+const componentLoader = new ComponentLoader();
+
 const DashboardComponent = componentLoader.add(
   "Dashboard",
-  path.join(__dirname, "components", "Dashboard.jsx")
+  path.join(__dirname, "components", "Dashboard.jsx") // FULLY FIXED PATH
 );
 
+// ==========================================================================
+// Sequelize Adapter
+// ==========================================================================
 AdminJS.registerAdapter({
   Resource: AdminJSSequelize.Resource,
   Database: AdminJSSequelize.Database,
 });
 
+// ==========================================================================
+// AdminJS Configuration
+// ==========================================================================
 const adminJs = new AdminJS({
-  databases: [sequelize],
   rootPath: "/admin",
-  componentLoader, // <-- IMPORTANT!
+  databases: [sequelize],
+  componentLoader, // IMPORTANT
+
   resources: [
+    // ---------------------- User ----------------------
     {
       resource: User,
       options: {
@@ -77,51 +92,59 @@ const adminJs = new AdminJS({
         },
       },
     },
+
+    // ---------------------- Category ----------------------
     { resource: Category },
+
+    // ---------------------- Product ----------------------
     {
       resource: Product,
       options: {
-        properties: {
-          categoryId: { reference: "Category" },
-        },
+        properties: { categoryId: { reference: "categories" } },
       },
     },
+
+    // ---------------------- Order ----------------------
     {
       resource: Order,
       options: {
-        properties: {
-          userId: { reference: "User" },
-        },
+        properties: { userId: { reference: "users" } },
       },
     },
+
+    // ---------------------- OrderItem ----------------------
     {
       resource: OrderItem,
       options: {
         properties: {
-          productId: { reference: "Product" },
-          orderId: { reference: "Order" },
+          productId: { reference: "products" },
+          orderId: { reference: "orders" },
         },
       },
     },
+
+    // ---------------------- Setting ----------------------
     { resource: Setting },
   ],
 
-  // IMPORTANT: New style dashboard config for AdminJS v7
+  // ========================================================================
+  // Dashboard (AdminJS v7)
+  // ========================================================================
   dashboard: {
     handler: async () => {
       const usersCount = await User.count();
       const ordersCount = await Order.count();
       const productsCount = await Product.count();
 
-      const rows = await Order.findAll({ attributes: ["total"] });
-      const revenue = rows.reduce(
-        (sum, row) => sum + parseFloat(row.total || 0),
+      const totals = await Order.findAll({ attributes: ["total"] });
+      const revenue = totals.reduce(
+        (s, o) => s + parseFloat(o.total || 0),
         0
       );
 
       return { usersCount, ordersCount, productsCount, revenue };
     },
-    component: DashboardComponent, // <--- FIX HERE
+    component: DashboardComponent,
   },
 
   branding: {
@@ -129,7 +152,9 @@ const adminJs = new AdminJS({
   },
 });
 
-// JWT Middleware FIRST
+// ==========================================================================
+// Router (JWT Protected)
+// ==========================================================================
 const router = AdminJSExpress.buildRouter(adminJs);
 
 const adminRouter = express.Router();

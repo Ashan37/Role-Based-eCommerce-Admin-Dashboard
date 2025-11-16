@@ -6,8 +6,8 @@ const OrderItem = sequelize.define(
   {
     id: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
 
-    orderId: { type: DataTypes.INTEGER },   // FIXED
-    productId: { type: DataTypes.INTEGER }, // FIXED
+    orderId: { type: DataTypes.INTEGER },   
+    productId: { type: DataTypes.INTEGER }, 
 
     quantity: { type: DataTypes.INTEGER, defaultValue: 1 },
     unit_price: { type: DataTypes.DECIMAL(10, 2) },

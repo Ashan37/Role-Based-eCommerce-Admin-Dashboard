@@ -1,7 +1,6 @@
 import express from "express";
 const router = express.Router();
 
-// Simple admin login page (dev convenience)
 router.get("/admin/login", (req, res) => {
   res.type("html").send(`
     <!doctype html>
@@ -50,6 +49,24 @@ router.get("/admin/login", (req, res) => {
       </body>
     </html>
   `);
+});
+
+// Logout: clear admin token cookie and redirect to login
+router.get("/admin/logout", (req, res) => {
+  const cookieName = process.env.ADMIN_COOKIE_NAME || "adminToken";
+  try {
+    res.clearCookie(cookieName, { path: "/" });
+  } catch (e) {
+    // ignore
+  }
+  // also clear session if present
+  try {
+    if (req.session) {
+      req.session.admin = null;
+      req.session.adminUser = null;
+    }
+  } catch (e) {}
+  return res.redirect("/admin/login");
 });
 
 export default router;

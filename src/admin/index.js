@@ -1,4 +1,3 @@
-// src/admin/index.js
 import AdminJS from "adminjs";
 import AdminJSExpress from "@adminjs/express";
 import AdminJSSequelize from "@adminjs/sequelize";
@@ -21,15 +20,11 @@ import {
 
 import { adminJwtMiddleware } from "../auth.js";
 
-// ==========================================================================
-// WINDOWS FIX: Resolve __dirname for ES modules
-// ==========================================================================
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-// ==========================================================================
 // Component Loader (AdminJS v7)
-// ==========================================================================
+
 const componentLoader = new ComponentLoader();
 
 const DashboardComponent = componentLoader.add(
@@ -37,17 +32,15 @@ const DashboardComponent = componentLoader.add(
   path.join(__dirname, "components", "Dashboard.jsx") // FULLY FIXED PATH
 );
 
-// ==========================================================================
 // Sequelize Adapter
-// ==========================================================================
+
 AdminJS.registerAdapter({
   Resource: AdminJSSequelize.Resource,
   Database: AdminJSSequelize.Database,
 });
 
-// ==========================================================================
 // AdminJS Configuration
-// ==========================================================================
+
 const adminJs = new AdminJS({
   rootPath: "/admin",
   databases: [sequelize],
@@ -127,9 +120,8 @@ const adminJs = new AdminJS({
     { resource: Setting },
   ],
 
-  // ========================================================================
   // Dashboard (AdminJS v7)
-  // ========================================================================
+
   dashboard: {
     handler: async () => {
       const usersCount = await User.count();
@@ -152,9 +144,8 @@ const adminJs = new AdminJS({
   },
 });
 
-// ==========================================================================
 // Router (JWT Protected)
-// ==========================================================================
+
 const router = AdminJSExpress.buildRouter(adminJs);
 
 const adminRouter = express.Router();
